@@ -3,7 +3,7 @@ const user = require("../models/userSchema");
 const { registerValidation } = require("../middleware/validation");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { verifyAdmin } = require("../middleware/verifyToken");
+const { verifyAdmin, verifyUser } = require("../middleware/verifyToken");
 
 router.post("/register", async (req, res) => {
 	let userReq = req.body;
@@ -50,10 +50,10 @@ router.post("/login", async (req, res) => {
 	}
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", verifyUser, async (req, res) => {
 	try {
 		const saltRounds = 10;
-		req.body.password = req.body.password && cbcrypt.hashSync(req.body.password, saltRounds);
+		req.body.password = req.body.password && bcrypt.hashSync(req.body.password, saltRounds);
 		const updatedUser = await user.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
 
 		if (!updatedUser) {

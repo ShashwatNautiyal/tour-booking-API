@@ -3,6 +3,7 @@ const admin = require("../models/adminSchema");
 const { registerValidation } = require("../middleware/validation");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { verifyAdmin } = require("../middleware/verifyToken");
 
 router.post("/register", async (req, res) => {
 	let adminReq = req.body;
@@ -49,7 +50,7 @@ router.post("/login", async (req, res) => {
 	}
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", verifyAdmin, async (req, res) => {
 	try {
 		const saltRounds = 10;
 		req.body.password = req.body.password && bcrypt.hashSync(req.body.password, saltRounds);
